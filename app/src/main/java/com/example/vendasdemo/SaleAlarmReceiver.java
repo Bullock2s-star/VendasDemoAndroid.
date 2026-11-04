@@ -16,19 +16,30 @@ public class SaleAlarmReceiver extends BroadcastReceiver {
     private static final Random RANDOM = new Random();
 
     @Override public void onReceive(Context context, Intent intent) {
+        showDemoNotification(context, false);
+        scheduleNext(context);
+    }
+
+    // Chamado pelo botão de teste para confirmar imediatamente que as notificações estão habilitadas.
+    static void showTestNotification(Context context) {
+        showDemoNotification(context, true);
+    }
+
+    private static void showDemoNotification(Context context, boolean test) {
         MainActivity.createChannel(context);
         int[] cents = {1790, 2790, 4790, 5790, 9790, 14790, 19700};
         int amount = cents[RANDOM.nextInt(cents.length)];
         String value = String.format(Locale.forLanguageTag("pt-BR"), "R$ %d,%02d", amount / 100, amount % 100);
         Notification.Builder builder = Build.VERSION.SDK_INT >= 26
                 ? new Notification.Builder(context, "sales_demo") : new Notification.Builder(context);
+        String detail = "Notificação fictícia de demonstração pessoal; nenhuma transação real ocorreu.";
         builder.setSmallIcon(android.R.drawable.ic_dialog_info)
-                .setContentTitle("Venda aprovada! • DEMONSTRAÇÃO")
-                .setContentText("Venda fictícia de " + value)
-                .setStyle(new Notification.BigTextStyle().bigText("Venda fictícia de " + value + ". Notificação de demonstração pessoal; nenhuma transação real ocorreu."))
+                .setContentTitle(test ? "Teste de notificação • DEMONSTRAÇÃO" : "Venda aprovada! • DEMONSTRAÇÃO")
+                .setContentText("Simulação de venda: " + value)
+                .setStyle(new Notification.BigTextStyle().bigText("Simulação de venda de " + value + ". " + detail))
                 .setAutoCancel(true);
-        ((NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE)).notify((int)System.currentTimeMillis(), builder.build());
-        scheduleNext(context);
+        int notificationId = test ? 4103 : (int) System.currentTimeMillis();
+        ((NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE)).notify(notificationId, builder.build());
     }
 
     static void scheduleNext(Context context) {

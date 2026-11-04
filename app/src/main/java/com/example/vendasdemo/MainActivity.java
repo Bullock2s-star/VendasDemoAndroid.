@@ -47,13 +47,26 @@ public class MainActivity extends Activity {
         start.setOnClickListener(v -> requestPermissionAndStart());
         root.addView(start, new LinearLayout.LayoutParams(-1, -2));
 
+        Button test = new Button(this); test.setText("Testar notificação agora");
+        test.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIFICATIONS);
+                Toast.makeText(this, "Autorize as notificações e toque em testar novamente", Toast.LENGTH_LONG).show();
+            } else {
+                SaleAlarmReceiver.showTestNotification(this);
+                Toast.makeText(this, "Notificação de teste enviada", Toast.LENGTH_SHORT).show();
+            }
+        });
+        LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(-1, -2); tp.topMargin = 12;
+        root.addView(test, tp);
+
         Button stop = new Button(this); stop.setText("Pausar notificações");
         stop.setOnClickListener(v -> { SaleAlarmReceiver.cancel(this); Toast.makeText(this, "Notificações pausadas", Toast.LENGTH_SHORT).show(); });
         LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(-1, -2); sp.topMargin = 12;
         root.addView(stop, sp);
 
         TextView note = new TextView(this);
-        note.setText("As notificações são fictícias e identificadas como DEMONSTRAÇÃO. O Android pode atrasar entregas em economia de bateria ou modo Doze.");
+        note.setText("Todas as notificações são fictícias e identificadas como DEMONSTRAÇÃO. Use o botão de teste para verificar a entrega imediata. O Android pode atrasar alarmes em modo de economia de bateria.");
         note.setTextSize(13); note.setTextColor(Color.GRAY); note.setGravity(Gravity.CENTER);
         note.setPadding(0, 28, 0, 0);
         root.addView(note, new LinearLayout.LayoutParams(-1, -2));
