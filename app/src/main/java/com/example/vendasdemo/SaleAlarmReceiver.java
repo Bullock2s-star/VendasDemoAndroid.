@@ -65,7 +65,7 @@ public class SaleAlarmReceiver extends BroadcastReceiver {
             builder = new Notification.Builder(context);
         }
 
-        builder.setSmallIcon(R.drawable.ic_cakto_notification)
+        builder.setSmallIcon(R.drawable.logo_cakto)
                 .setContentTitle(title)
                 .setContentText(mainText)
                 .setStyle(new Notification.BigTextStyle().bigText(detailText))
