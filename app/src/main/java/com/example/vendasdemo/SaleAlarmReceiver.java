@@ -59,7 +59,10 @@ public class SaleAlarmReceiver extends BroadcastReceiver {
                 .setAutoCancel(true)
                 .setPriority(Notification.PRIORITY_HIGH);
 
-        notificationManager.notify(4103, pixBuilder.build());
+        notificationManager.notify(
+        (int) System.currentTimeMillis(),
+        pixBuilder.build()
+);
 
         // SEGUNDA NOTIFICAÇÃO: VENDA
         Notification.Builder saleBuilder;
@@ -76,7 +79,10 @@ public class SaleAlarmReceiver extends BroadcastReceiver {
                 .setAutoCancel(true)
                 .setPriority(Notification.PRIORITY_HIGH);
 
-        notificationManager.notify(4104, saleBuilder.build());
+        notificationManager.notify(
+        (int) (System.currentTimeMillis() + 1),
+        saleBuilder.build()
+);
     }
 
     static void scheduleNext(Context context) {
