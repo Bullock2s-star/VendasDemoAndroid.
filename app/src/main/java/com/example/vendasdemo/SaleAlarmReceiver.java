@@ -24,7 +24,6 @@ public class SaleAlarmReceiver extends BroadcastReceiver {
         scheduleNext(context);
     }
 
-    // Notificação de teste acionada pelo botão do aplicativo
     static void showTestNotification(Context context) {
         showNotification(context);
     }
@@ -33,7 +32,6 @@ public class SaleAlarmReceiver extends BroadcastReceiver {
 
         MainActivity.createChannel(context);
 
-        // Valor ilustrativo entre R$ 2,00 e R$ 49,99
         int amountCents = 200 + RANDOM.nextInt(4800);
 
         String value = String.format(
@@ -43,46 +41,46 @@ public class SaleAlarmReceiver extends BroadcastReceiver {
                 amountCents % 100
         );
 
-        // Escolhe aleatoriamente o tipo de notificação
-        boolean isPix = RANDOM.nextBoolean();
-
-        String title = isPix
-                ? "Pix gerado!"
-                : "Venda aprovada!";
-
-        String mainText = "Sua comissão: " + value;
-
-        // Identifica claramente que os valores são demonstrativos
-        String detailText = isPix
-                ? "DEMONSTRAÇÃO — Notificação ilustrativa de Pix. Valor: " + value
-                : "DEMONSTRAÇÃO — Notificação ilustrativa de venda. Comissão: " + value;
-
-        Notification.Builder builder;
-
-        if (Build.VERSION.SDK_INT >= 26) {
-            builder = new Notification.Builder(context, "sales_demo");
-        } else {
-            builder = new Notification.Builder(context);
-        }
-
-        builder.setSmallIcon(R.drawable.logo_cakto)
-                .setContentTitle(title)
-                .setContentText(mainText)
-                .setStyle(new Notification.BigTextStyle().bigText(detailText))
-                .setAutoCancel(true)
-                .setPriority(Notification.PRIORITY_HIGH);
-
-        int notificationId = (int) System.currentTimeMillis();
-
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(notificationId, builder.build());
+        // PRIMEIRA NOTIFICAÇÃO: PIX
+        Notification.Builder pixBuilder;
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            pixBuilder = new Notification.Builder(context, "sales_demo");
+        } else {
+            pixBuilder = new Notification.Builder(context);
+        }
+
+        pixBuilder.setSmallIcon(R.drawable.logo_cakto)
+                .setContentTitle("Pix gerado!")
+                .setContentText("Sua comissão: " + value)
+                .setAutoCancel(true)
+                .setPriority(Notification.PRIORITY_HIGH);
+
+        notificationManager.notify(4103, pixBuilder.build());
+
+        // SEGUNDA NOTIFICAÇÃO: VENDA
+        Notification.Builder saleBuilder;
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            saleBuilder = new Notification.Builder(context, "sales_demo");
+        } else {
+            saleBuilder = new Notification.Builder(context);
+        }
+
+        saleBuilder.setSmallIcon(R.drawable.logo_cakto)
+                .setContentTitle("Venda aprovada!")
+                .setContentText("Sua comissão: " + value)
+                .setAutoCancel(true)
+                .setPriority(Notification.PRIORITY_HIGH);
+
+        notificationManager.notify(4104, saleBuilder.build());
     }
 
     static void scheduleNext(Context context) {
 
-        // Intervalo aleatório entre 2 e 15 minutos
         int minutes = 2 + RANDOM.nextInt(14);
 
         long when = System.currentTimeMillis() + minutes * 60_000L;
