@@ -16,34 +16,53 @@ public class SaleAlarmReceiver extends BroadcastReceiver {
     private static final Random RANDOM = new Random();
 
     @Override public void onReceive(Context context, Intent intent) {
-        showDemoNotification(context, false);
+        showRealNotification(context);
         scheduleNext(context);
     }
 
-    // Chamado pelo botão de teste para confirmar imediatamente que as notificações estão habilitadas.
+    // Chamado pelo botão de teste dentro do app
     static void showTestNotification(Context context) {
-        showDemoNotification(context, true);
+        showRealNotification(context);
     }
 
-    private static void showDemoNotification(Context context, boolean test) {
+    private static void showRealNotification(Context context) {
         MainActivity.createChannel(context);
-        int[] cents = {1790, 2790, 4790, 5790, 9790, 14790, 19700};
+        
+        // Valores variados para parecerem vendas reais e aleatórias
+        int[] cents = {2780, 4500, 5590, 7800, 9790, 12500, 15000, 19700};
         int amount = cents[RANDOM.nextInt(cents.length)];
         String value = String.format(Locale.forLanguageTag("pt-BR"), "R$ %d,%02d", amount / 100, amount % 100);
+
         Notification.Builder builder = Build.VERSION.SDK_INT >= 26
-                ? new Notification.Builder(context, "sales_demo") : new Notification.Builder(context);
-        String detail = "Notificação fictícia de demonstração pessoal; nenhuma transação real ocorreu.";
-        builder.setSmallIcon(android.R.drawable.ic_dialog_info)
-                .setContentTitle(test ? "Teste de notificação • DEMONSTRAÇÃO" : "Venda aprovada! • DEMONSTRAÇÃO")
-                .setContentText("Simulação de venda: " + value)
-                .setStyle(new Notification.BigTextStyle().bigText("Simulação de venda de " + value + ". " + detail))
-                .setAutoCancel(true);
-        int notificationId = test ? 4103 : (int) System.currentTimeMillis();
+                ? new Notification.Builder(context, "sales_demo") 
+                : new Notification.Builder(context);
+
+        // Título genérico e profissional
+        String title = "Venda Aprovada!";
+        
+        // Texto principal: mostra o valor da comissão
+        String mainText = "Sua comissão: " + value;
+        
+        // Texto expandido (quando puxa para baixo na notificação)
+        String detailText = "Nova venda registrada. Valor líquido: " + value + ". O pagamento será processado em breve.";
+
+        // Ícone: use R.drawable.seu_logo_se_tiver, senão deixa o padrão do sistema ou um ícone neutro
+        // Se quiser usar seu logo, coloque: .setSmallIcon(R.drawable.ic_cakto)
+        builder.setSmallIcon(android.R.drawable.ic_lock_idle_alarm) 
+               .setContentTitle(title)
+               .setContentText(mainText)
+               .setStyle(new Notification.BigTextStyle().bigText(detailText))
+               .setAutoCancel(true)
+               .setPriority(Notification.PRIORITY_HIGH);
+
+        // ID único para cada notificação
+        int notificationId = (int) System.currentTimeMillis();
         ((NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE)).notify(notificationId, builder.build());
     }
 
     static void scheduleNext(Context context) {
-        int minutes = 2 + RANDOM.nextInt(14); // 2..15
+        // Intervalo entre 2 e 15 minutos
+        int minutes = 2 + RANDOM.nextInt(14); 
         long when = System.currentTimeMillis() + minutes * 60_000L;
         AlarmManager manager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pi = pendingIntent(context);
